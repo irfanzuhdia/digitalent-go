@@ -42,9 +42,9 @@ func findStudents(osArgs []string, studentsList []Student) {
 	for i := 1; i < len(osArgs); i++ {
 		j, err := strconv.Atoi(os.Args[i])
 		if err != nil {
-			fmt.Print(`Error: "`, os.Args[i], `" is not a number
-			
-			`)
+			fmt.Print(`Error: "`, os.Args[i], `" is not a number`)
+			fmt.Println()
+			fmt.Println()
 		} else {
 			if j > len(studentsList) {
 				fmt.Println("No :", j, " not found")
