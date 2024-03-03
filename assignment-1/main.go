@@ -47,7 +47,7 @@ func findStudents(osArgs []string, studentsList []Student) {
 			fmt.Println()
 		} else {
 			if j > len(studentsList) {
-				fmt.Println("No :", j, " not found")
+				fmt.Println("No:", j, "not found")
 				fmt.Println()
 			} else {
 				fmt.Println("No:", j)
