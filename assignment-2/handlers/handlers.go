@@ -7,7 +7,7 @@ import (
 func SetupRoutes(router *gin.Engine) {
 	router.POST("/orders", createOrder)
 	router.GET("/orders", getOrders)
-	router.PATCH("/orders/:id", updateOrder)
+	router.PUT("/orders/:id", updateOrder)
 	router.DELETE("/orders/:id", deleteOrder)
 }
 
