@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Air dan Angin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .aman {
+            color: green;
+        }
+
+        .siaga {
+            color: yellow;
+        }
+
+        .bahaya {
+            color: red;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Status Air dan Angin</h1>
+        <p>Water: <span id="water" class="status"></span></p>
+        <p>Wind: <span id="wind" class="status"></span></p>
+        <p>Status Water: <span id="waterStatus" class="status"></span></p>
+        <p>Status Wind: <span id="windStatus" class="status"></span></p>
+
+        <canvas id="statusChart"></canvas>
+    </div>
+
+    <script>
+        let labels = [];
+        let waterData = [];
+        let windData = [];
+        let chart;
+
+        function getStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('water').innerText = data.status.water + ' meter';
+                    document.getElementById('wind').innerText = data.status.wind + ' meter/detik';
+                    document.getElementById('waterStatus').innerText = data.waterStatus;
+                    document.getElementById('waterStatus').className = `status ${data.waterStatus.toLowerCase()}`;
+                    document.getElementById('windStatus').innerText = data.windStatus;
+                    document.getElementById('windStatus').className = `status ${data.windStatus.toLowerCase()}`;
+
+                    const currentTime = new Date().toLocaleTimeString();
+                    labels.push(currentTime);
+                    waterData.push(data.status.water);
+                    windData.push(data.status.wind);
+
+                    // Membatasi data chart hanya 15 detik terakhir
+                    if (labels.length > 15) {
+                        labels.shift();
+                        waterData.shift();
+                        windData.shift();
+                    }
+
+                    updateChart();
+                });
+        }
+
+        function updateChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+
+            if (!chart) {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Water',
+                                data: waterData,
+                                borderColor: 'blue',
+                                borderDash: [5, 5], // Garis putus-putus
+                                fill: false
+                            },
+                            {
+                                label: 'Wind',
+                                data: windData,
+                                borderColor: 'green',
+                                borderDashOffset: 5, // Garis putus-putus dengan offset
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Time'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Value'
+                                }
+                            }]
+                        }
+                    }
+                });
+            } else {
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = waterData;
+                chart.data.datasets[1].data = windData;
+                chart.update();
+            }
+        }
+
+        getStatus(); // Load status saat halaman pertama kali dibuka
+        setInterval(getStatus, 2000); // Update status setiap 2 detik
+    </script>
+</body>
+
+</html>
