@@ -88,7 +88,7 @@
                     waterData.push(data.status.water);
                     windData.push(data.status.wind);
 
-                    // Membatasi data chart hanya 15 detik terakhir
+
                     if (labels.length > 15) {
                         labels.shift();
                         waterData.shift();
@@ -153,7 +153,7 @@
         }
 
         getStatus(); // Load status saat halaman pertama kali dibuka
-        setInterval(getStatus, 2000); // Update status setiap 2 detik
+        setInterval(getStatus, 15000); // Update status setiap 15 detik
     </script>
 </body>
 
